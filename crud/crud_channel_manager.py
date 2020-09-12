@@ -16,6 +16,9 @@ def create_channel_manager(db: Session, manager_id:str,channel_id:str):
 def count_manager_of_channel(db:Session,channel_id:str):
     return db.query(channel_manager.Channel_Manager).filter(channel_manager.Channel_Manager.channel_id == channel_id).count()
 
+def count_channel_manager(db:Session,manager_id:str):
+    return db.query(channel_manager.Channel_Manager).filter(channel_manager.Channel_Manager.manager_id == manager_id).count()
+
 def get_manager_id_of_channel(db:Session,channel_id:str):
     return db.query(channel_manager.Channel_Manager.manager_id).filter(channel_manager.Channel_Manager.channel_id == channel_id).all()
 

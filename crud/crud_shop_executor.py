@@ -30,8 +30,12 @@ def delete_shop_executor(db: Session,shop_id:str,executor_id:str):
 def count_shop_of_executors(db:Session,shop_id:str):
     return db.query(shop_executor.Shop_Executor).filter(shop_executor.Shop_Executor.shop_id == shop_id).count()
 
+def count_executors_shop(db:Session,executor_id:str):
+    return db.query(shop_executor.Shop_Executor).filter(shop_executor.Shop_Executor.executor_id == executor_id).count()
+
+
 def get_executor_id_of_shop(db:Session,shop_id:str):
     return db.query(shop_executor.Shop_Executor.executor_id).filter(shop_executor.Shop_Executor.shop_id == shop_id).all()
 
 def get_shop_id_of_executor(db:Session,executor_id:str):
-    return db.query(shop_executor.Shop_Executor.executor_id).filter(shop_executor.Shop_Executor.executor_id == executor_id).all()
+    return db.query(shop_executor.Shop_Executor.shop_id).filter(executor_id == executor_id).all()

@@ -9,6 +9,7 @@ from schemas import user_schema,shop_schema,channel_schema
 from api import deps
 from jose import JWTError, jwt
 from pydantic import BaseModel, ValidationError
+from core import sercurity
 import mysql.connector
 router = APIRouter()
 
@@ -33,6 +34,9 @@ def check_sercurity_scopes(token,scopes):
 
 @router.get("/", response_model=List[user_schema.User])
 def All_users(token:Optional[str] = Header(None),db: Session = Depends(deps.get_db)):
+    '''
+    View All User
+    '''
     try:
         check_sercurity_scopes(token=token,scopes=settings.VIEW_ALL_USER_SCOPE)
     except (JWTError, ValidationError):
@@ -49,9 +53,86 @@ def All_users(token:Optional[str] = Header(None),db: Session = Depends(deps.get_
         ) 
     return crud_user.get_all_user(db=db)
 
-    
+
+@router.get("/executors")
+def All_users(token:Optional[str] = Header(None),db: Session = Depends(deps.get_db)):
+    '''
+    View All executor User
+    '''
+    try:
+        check_sercurity_scopes(token=token,scopes=settings.VIEW_ALL_USER_SCOPE)
+    except (JWTError, ValidationError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized ",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except (mysql.connector.Error):
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="My sql connection error ",
+            headers={"WWW-Authenticate": "Bearer"},
+        ) 
+    return crud_user.get_all_executor(db=db)
+
+@router.get("/managers")
+def All_users(token:Optional[str] = Header(None),db: Session = Depends(deps.get_db)):
+    '''
+    View All manager User
+    '''
+    try:
+        check_sercurity_scopes(token=token,scopes=settings.VIEW_ALL_USER_SCOPE)
+    except (JWTError, ValidationError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized ",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except (mysql.connector.Error):
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="My sql connection error ",
+            headers={"WWW-Authenticate": "Bearer"},
+        ) 
+    return crud_user.get_all_manager(db=db)
+
+@router.get("/create-user")
+def All_users(user_name:str,role:str,token:Optional[str] = Header(None),db: Session = Depends(deps.get_db)):
+    '''
+    View All manager User
+    '''
+    try:
+        check_sercurity_scopes(token=token,scopes=settings.ADD_NEW_USER)
+        
+        if not crud_user.get_user_by_username(db=db,user_name=user_name) is None:
+            raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="User already exist "
+        )
+        if sercurity.check_email(user_name) is False:
+            raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Invalid user name "
+        )
+    except (JWTError, ValidationError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized ",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except (mysql.connector.Error):
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="My sql connection error ",
+            headers={"WWW-Authenticate": "Bearer"},
+        ) 
+    return {"message":"success"}
+
 @router.get("/{id}", response_model=user_schema.User)
-def get_dbuser(id:str,token:Optional[str] = Header(None), db: Session = Depends(deps.get_db)):
+def user_detail(id:str,token:Optional[str] = Header(None), db: Session = Depends(deps.get_db)):
+    '''
+    View user detail  with user id 
+    '''
     try:
         check_sercurity_scopes(token=token,scopes=settings.VIEW_USER_DETAIL_SCOPE)
     except (JWTError, ValidationError):
@@ -69,7 +150,10 @@ def get_dbuser(id:str,token:Optional[str] = Header(None), db: Session = Depends(
     return crud_user.get_user(db=db,user_id=id)
 
 @router.post("/{id}/inactivate")
-def get_dbuser(id:str,token:Optional[str] = Header(None), db: Session = Depends(deps.get_db)):
+def Inactivate_user(id:str,token:Optional[str] = Header(None), db: Session = Depends(deps.get_db)):
+    '''
+    Inactivate user
+    '''
     try:
         check_sercurity_scopes(token=token,scopes=settings.INACTIVATE_USER_SCOPE)
         crud_user.inactivate_user(db=db,user_id=id,activate="0")
@@ -89,6 +173,9 @@ def get_dbuser(id:str,token:Optional[str] = Header(None), db: Session = Depends(
 
 @router.post("/{id}/activate")
 def get_dbuser(id:str,token:Optional[str] = Header(None), db: Session = Depends(deps.get_db)):
+    '''
+    Activate user
+    '''
     try:
         check_sercurity_scopes(token=token,scopes=settings.INACTIVATE_USER_SCOPE)
         crud_user.inactivate_user(db=db,user_id=id,activate="1")
@@ -106,12 +193,14 @@ def get_dbuser(id:str,token:Optional[str] = Header(None), db: Session = Depends(
         ) 
     return {"message":"Activate success"}
 
-@router.get("/{id}/all-shop", response_model=List[shop_schema.Shop])
-def get_all_shops_executor(id:str,token:Optional[str] = Header(None), db: Session = Depends(deps.get_db)):
-    
+@router.get("/{executor_id}/all-shop")
+def get_all_shops_executor(executor_id:str,token:Optional[str] = Header(None), db: Session = Depends(deps.get_db)):
+    '''
+    View all executor shop
+    '''
     try:
         check_sercurity_scopes(token=token,scopes=settings.VIEW_USER_DETAIL_SCOPE)
-        executor=crud_user.get_user(db=db,user_id=id)
+        executor=crud_user.get_user(db=db,user_id=executor_id)
         if executor is None or executor.role!="executor"   :
             raise HTTPException(
                 status_code=status.HTTP_502_BAD_GATEWAY,
@@ -303,7 +392,7 @@ def asign_channel_to_manager(manager_id: str,channel_id:List[str],token:Optional
                 detail="Invalid manager id"
             )
         for id in channel_id:
-            if crud_channel.get_channel(db=db,channel_id=id):
+            if crud_channel.get_channel(db=db,channel_id=id) is None:
                 raise HTTPException(
                 status_code=status.HTTP_502_BAD_GATEWAY,
                 detail="Invalid channel id"

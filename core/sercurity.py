@@ -5,6 +5,7 @@ from fastapi.security import (
     OAuth2PasswordBearer,
     SecurityScopes,
 )
+import re
 from jose import JWTError, jwt
 
 from passlib.context import CryptContext
@@ -19,7 +20,7 @@ oauth2_scheme = OAuth2PasswordBearer(
     )
 def check_email(email):  
   
-    if(re.search(settings.regex,email)):  
+    if(re.search(settings.REGEX,email)):  
         return True  
     return False
 

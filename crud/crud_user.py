@@ -4,11 +4,29 @@ from api import deps
 from models import user
 from schemas import user_schema
 from crud import crud_channel_manager,crud_shop_executor
-
+import random
 from fastapi import APIRouter, Depends, HTTPException
+import string
+
+def get_random_string(length):
+    letters = string.ascii_lowercase
+    result_str = ''.join(random.choice(letters) for i in range(length))
+    return result_str
+
 def get_user(db: Session, user_id: str):
     return db.query(user.User).filter(user.User.id == user_id).first()
 
+def get_all_executor(db:Session):
+    executors=db.query(user.User).filter(user.User.role=="executor").all()
+    for executor in executors:
+        executor.shop_count=crud_shop_executor.count_executors_shop(db=db,executor_id=executor.id)
+    return executors
+
+def get_all_manager(db:Session):
+    managers=db.query(user.User).filter(user.User.role=="manager").all()
+    for manager in managers:
+        manager.shop_count=crud_channel_manager.count_channel_manager(db=db,manager_id=manager.id)
+    return managers
 
 def get_all_user(db: Session):
     return db.query(user.User).all()
@@ -58,3 +76,10 @@ def get_all_shop_not_belong_to_executors(db:Session,shop_id:str):
 def inactivate_user(db:Session,user_id:str,activate:str):
     db.query(user.User).filter(user.User.id == user_id).update({user.User.activate:activate})
     db.commit()
+
+def create_new_user(db:Session,user_name:str,role:str):
+    db_user = user.User(id=get_random_string(8),user_name=user_name, role=role,activate="1")
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user

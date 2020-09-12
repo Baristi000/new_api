@@ -16,7 +16,7 @@ class User(UserBase):
     id: str
     role: str
     activate:str
-    hashed_password:str 
+    hashed_password:Optional[str] = None
     first_name:Optional[str] = None
     last_name:Optional[str] = None
     last_login:Optional[str] = None

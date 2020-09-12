@@ -26,25 +26,23 @@ def count_shop(db:Session,channel_id:str):
     return db.query(shop.Shop).filter(shop.Shop.channel_id == channel_id).count()
 
 def get_all_shop_of_executor(db:Session,executor_id:str):
-    shop_id=crud_shop_executor.get_shop_id_of_executor(db=db,executor_id=executor_id)
     all_shop_id=[]
-    for id in shop_id:
+    for id in crud_shop_executor.get_shop_id_of_executor(db=db,executor_id=executor_id):
         all_shop_id.append(id[0])
 
     return db.query(shop.Shop).filter(shop.Shop.id.in_(all_shop_id)).all()
 
+
 def get_all_not_shop_of_executor(db:Session,executor_id:str):
-    shop_id=crud_shop_executor.get_shop_id_of_executor(db=db,executor_id=executor_id)
     all_shop_id=[]
-    for id in shop_id:
+    for id in crud_shop_executor.get_shop_id_of_executor(db=db,executor_id=executor_id):
         all_shop_id.append(id[0])
 
     return db.query(shop.Shop).filter(shop.Shop.id.notin_(all_shop_id)).all()
 
 def get_all_shop_of_manager(db:Session,manager_id:str):
-    channel_id=crud_channel_manager.get_channel_id_of_manager(db=db,manager_id=manager_id)
     all_channel_id=[]
-    for id in channel_id:
+    for id in crud_channel_manager.get_channel_id_of_manager(db=db,manager_id=manager_id):
         all_channel_id.append(id[0])
 
     return db.query(shop.Shop).filter(shop.Shop.channel_id.in_(all_channel_id)).all()
@@ -54,3 +52,6 @@ def check_shop_manager(db:Session,shop_id:str,manager_id:str):
     if crud_channel_manager.get_channel_manager(db=db,channel_id=current_shop.channel_id,manager_id=manager_id) is None:
         return True
     return False
+
+def get_all_shop_channel(db:Session,channel_id:str):
+    return db.query(shop.Shop).filter(shop.Shop.channel_id==channel_id).all()
