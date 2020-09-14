@@ -7,10 +7,15 @@ def get_channel(db: Session, channel_id: str):
     return db.query(channel.Channel).filter(channel.Channel.id == channel_id).first()
 
 def get_all_channel(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(channel.Channel).offset(skip).limit(limit).all()
-
+    channels= db.query(channel.Channel).offset(skip).limit(limit).all()
+    for c in channels:
+        c.number_of_manager=crud_channel_manager.count_manager_of_channel(db=db,channel_id=c.id)
+    return channels
 def get_all_channel_db(db: Session):
-    return db.query(channel.Channel).all()
+    channels=db.query(channel.Channel).all()
+    for c in channels:
+        c.number_of_manager=crud_channel_manager.count_manager_of_channel(db=db,channel_id=c.id)
+    return channels
 
 def create_channel(db: Session, created_channel: channel_schema.ChannelCreate):
     db_channel = channel.Channel(id=created_channel.id,name=created_channel.name)

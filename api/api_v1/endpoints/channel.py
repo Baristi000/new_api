@@ -1,12 +1,14 @@
-from typing import Any, List
-
-from fastapi import APIRouter, Depends, HTTPException,status
+from typing import Any, List,Optional
+from jose import JWTError, jwt
+from pydantic import BaseModel, ValidationError
+from fastapi import APIRouter, Depends, HTTPException,status,Header
 from sqlalchemy.orm import Session
 from core.config import settings
 import crud, models, schemas
 from crud import crud_channel,crud_shop,crud_channel_manager,crud_user
 from schemas import channel_schema
 from api import deps
+import mysql.connector
 router = APIRouter()
 
 
@@ -28,8 +30,8 @@ def check_sercurity_scopes(token,scopes):
             raise  credentials_exception
     return payload.get("id"),payload.get("role")
 
-@router.get("/", response_model=List[channel_schema.Channel])
-def all_channel(db: Session = Depends(deps.get_db)):
+@router.get("/")
+def all_channel(token:Optional[str] = Header(None),db: Session = Depends(deps.get_db)):
     try:
         check_sercurity_scopes(token=token,scopes=settings.VIEW_ALL_CHANNEL_SCOPE)
     except (JWTError, ValidationError):
@@ -48,7 +50,7 @@ def all_channel(db: Session = Depends(deps.get_db)):
 
 
 @router.get("/{channel_id}", response_model=channel_schema.Channel)
-def channel_detail(channel_id:str, db: Session = Depends(deps.get_db)):
+def channel_detail(channel_id:str,token:Optional[str] = Header(None), db: Session = Depends(deps.get_db)):
     try:
         check_sercurity_scopes(token=token,scopes=settings.VIEW_CHANNEL_DETAIL_SCOPE)
     except (JWTError, ValidationError):
@@ -66,7 +68,7 @@ def channel_detail(channel_id:str, db: Session = Depends(deps.get_db)):
     return crud_channel.get_channel(db=db,channel_id=channel_id)
 
 @router.get("/{channel_id}/shop-count")
-def Count_shop_of_channel(channel_id:str, db: Session = Depends(deps.get_db)):
+def Count_shop_of_channel(channel_id:str,token:Optional[str] = Header(None), db: Session = Depends(deps.get_db)):
     try:
         check_sercurity_scopes(token=token,scopes=settings.VIEW_CHANNEL_DETAIL_SCOPE)
     except (JWTError, ValidationError):
@@ -84,7 +86,7 @@ def Count_shop_of_channel(channel_id:str, db: Session = Depends(deps.get_db)):
     return crud_shop.count_shop(db=db,channel_id=channel_id)
 
 @router.get("/{channel_id}/manager-count")
-def Number_of_channel_manager(channel_id:str, db: Session = Depends(deps.get_db)):
+def Number_of_channel_manager(channel_id:str,token:Optional[str] = Header(None), db: Session = Depends(deps.get_db)):
     try:
         check_sercurity_scopes(token=token,scopes=settings.VIEW_CHANNEL_DETAIL_SCOPE)
     except (JWTError, ValidationError):
@@ -102,7 +104,7 @@ def Number_of_channel_manager(channel_id:str, db: Session = Depends(deps.get_db)
     return crud_channel_manager.count_manager_of_channel(db=db,channel_id=channel_id)
 
 @router.get("/{channel_id}/all-manager")
-def all_channel_manager(channel_id:str, db: Session = Depends(deps.get_db)):
+def all_channel_manager(channel_id:str,token:Optional[str] = Header(None), db: Session = Depends(deps.get_db)):
     try:
         check_sercurity_scopes(token=token,scopes=settings.VIEW_CHANNEL_DETAIL_SCOPE)
     except (JWTError, ValidationError):
@@ -120,7 +122,7 @@ def all_channel_manager(channel_id:str, db: Session = Depends(deps.get_db)):
     return crud_user.get_all_channel_manager(db=db,channel_id=channel_id)
 
 @router.get("/{channel_id}/all-manager-not_channel")
-def all_channel_manager_not_belong_to_channel(channel_id:str, db: Session = Depends(deps.get_db)):
+def all_channel_manager_not_belong_to_channel(channel_id:str,token:Optional[str] = Header(None), db: Session = Depends(deps.get_db)):
     try:
         check_sercurity_scopes(token=token,scopes=settings.VIEW_CHANNEL_DETAIL_SCOPE)
     except (JWTError, ValidationError):
@@ -137,8 +139,8 @@ def all_channel_manager_not_belong_to_channel(channel_id:str, db: Session = Depe
         )
     return crud_user.get_all_manager_not_belong_to_channel(db=db,channel_id=channel_id)
 
-@router.get("/{channel_id}/add-manager")
-def add_manager_from_channel(channel_id:str,managers_id:List[str], db: Session = Depends(deps.get_db)):
+@router.post("/{channel_id}/add-manager")
+def add_manager_from_channel(channel_id:str,managers_id:List[str],token:Optional[str] = Header(None), db: Session = Depends(deps.get_db)):
     try:
         check_sercurity_scopes(token=token,scopes=settings.ADD_CHANNEL_MANAGER_SCOPE)
 
@@ -173,10 +175,10 @@ def add_manager_from_channel(channel_id:str,managers_id:List[str], db: Session =
             detail="My sql connection error ",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    return crud_user.get_all_manager_not_belong_to_channel(db=db,channel_id=channel_id)
+    return {"message":"add success"}
 
-@router.get("/{channel_id}/deltete-manager")
-def delete_manager_from_channel(channel_id:str,managers_id:List[str], db: Session = Depends(deps.get_db)):
+@router.post("/{channel_id}/deltete-manager")
+def delete_manager_from_channel(channel_id:str,managers_id:List[str],token:Optional[str] = Header(None), db: Session = Depends(deps.get_db)):
     try:
         check_sercurity_scopes(token=token,scopes=settings.ADD_CHANNEL_MANAGER_SCOPE)
 
@@ -211,6 +213,6 @@ def delete_manager_from_channel(channel_id:str,managers_id:List[str], db: Sessio
             detail="My sql connection error ",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    return crud_user.get_all_manager_not_belong_to_channel(db=db,channel_id=channel_id)
+    return {"message":"update success"}
 
     

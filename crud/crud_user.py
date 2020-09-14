@@ -25,7 +25,7 @@ def get_all_executor(db:Session):
 def get_all_manager(db:Session):
     managers=db.query(user.User).filter(user.User.role=="manager").all()
     for manager in managers:
-        manager.shop_count=crud_channel_manager.count_channel_manager(db=db,manager_id=manager.id)
+        manager.channel_count=crud_channel_manager.count_channel_manager(db=db,manager_id=manager.id)
     return managers
 
 def get_all_user(db: Session):

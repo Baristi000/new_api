@@ -23,7 +23,7 @@ def get_manager_id_of_channel(db:Session,channel_id:str):
     return db.query(channel_manager.Channel_Manager.manager_id).filter(channel_manager.Channel_Manager.channel_id == channel_id).all()
 
 def get_channel_id_of_manager(db:Session,manager_id:str):
-    return db.query(channel_manager.Channel_Manager.manager_id).filter(channel_manager.Channel_Manager.manager_id == manager_id).all()
+    return db.query(channel_manager.Channel_Manager.channel_id).filter(channel_manager.Channel_Manager.manager_id == manager_id).all()
 
 def delete_channel_manager(db: Session,channel_id:str,manager_id:str):
     db_channel_manager =db.query(channel_manager.Channel_Manager).filter(channel_manager.Channel_Manager.channel_id == channel_id,channel_manager.Channel_Manager.manager_id == manager_id).first()

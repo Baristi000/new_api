@@ -55,7 +55,7 @@ def All_users(token:Optional[str] = Header(None),db: Session = Depends(deps.get_
 
 
 @router.get("/executors")
-def All_users(token:Optional[str] = Header(None),db: Session = Depends(deps.get_db)):
+def All_executors(token:Optional[str] = Header(None),db: Session = Depends(deps.get_db)):
     '''
     View All executor User
     '''
@@ -76,7 +76,7 @@ def All_users(token:Optional[str] = Header(None),db: Session = Depends(deps.get_
     return crud_user.get_all_executor(db=db)
 
 @router.get("/managers")
-def All_users(token:Optional[str] = Header(None),db: Session = Depends(deps.get_db)):
+def All_managers(token:Optional[str] = Header(None),db: Session = Depends(deps.get_db)):
     '''
     View All manager User
     '''
@@ -218,7 +218,7 @@ def get_all_shops_executor(executor_id:str,token:Optional[str] = Header(None), d
             detail="My sql connection error ",
             headers={"WWW-Authenticate": "Bearer"},
         ) 
-    return crud_shop.get_all_shop_of_executor(db=db,executor_id=id)
+    return crud_shop.get_all_shop_of_executor(db=db,executor_id=executor_id)
 
 @router.post("/{executors_id}/add-many-shop")
 async def asign_shop_to_executor(executors_id: str,shop_id:List[str],token:Optional[str] = Header(None),db: Session = Depends(deps.get_db)):

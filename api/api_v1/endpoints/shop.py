@@ -30,14 +30,13 @@ def check_sercurity_scopes(token,scopes):
             raise  credentials_exception
     return payload.get("id"),payload.get("role")
 
-@router.get("/", response_model=List[shop_schema.Shop])
+@router.get("/")
 def All_shop(skip: int = 0, limit: int = 100,token:Optional[str] = Header(None), db: Session = Depends(deps.get_db)):
     '''
     View All Shop
     '''
     try:
         check_sercurity_scopes(token=token,scopes=settings.VIEW_ALL_SHOP_SCOPE)
-        shops = crud_shop.get_all_shops(db, skip=skip, limit=limit)
     except (JWTError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -50,7 +49,7 @@ def All_shop(skip: int = 0, limit: int = 100,token:Optional[str] = Header(None),
             detail="My sql connection error ",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    return shops
+    return crud_shop.get_all_shops(db, skip=skip, limit=limit)
 
 @router.get("/{shopid}", response_model=shop_schema.Shop)
 def Shop_detail(shopid:str,token:Optional[str] = Header(None),db: Session = Depends(deps.get_db)):

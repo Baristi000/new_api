@@ -1,15 +1,18 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import update
 from models import shop
-from crud import crud_shop_executor,crud_channel_manager,crud_shop
+from crud import crud_shop_executor,crud_channel_manager,crud_shop,crud_channel,crud_country
 from schemas import shop_schema
 
 def get_shop(db: Session, shop_id: int):
     return db.query(shop.Shop).filter(shop.Shop.id == shop_id).first()
 
 def get_all_shops(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(shop.Shop).offset(skip).limit(limit).all()
-
+    shops=db.query(shop.Shop).offset(skip).limit(limit).all()
+    for s in shops:
+        s.channel_name=crud_channel.get_channel(db=db,channel_id=s.channel_id).name
+        s.country_name=crud_country.get_country(db=db,country_id=s.postal_code).name
+    return shops
 def update_shop_sim(db:Session,sim_number:str,shop_id:str):
     db.query(shop.Shop).filter(shop.Shop.id == shop_id).update({shop.Shop.sim_number:sim_number})
     db.commit()
@@ -30,7 +33,9 @@ def get_all_shop_of_executor(db:Session,executor_id:str):
     for id in crud_shop_executor.get_shop_id_of_executor(db=db,executor_id=executor_id):
         all_shop_id.append(id[0])
 
-    return db.query(shop.Shop).filter(shop.Shop.id.in_(all_shop_id)).all()
+    for shop in db.query(shop.Shop).filter(shop.Shop.id.in_(all_shop_id)).all():
+        shop.channel_name=crud_channel.get_channel(db=db,channel_id=shop.channel_id).name
+        shop.country_name=crud_country.get_country(db=db,country_id=shop.country_id).name
 
 
 def get_all_not_shop_of_executor(db:Session,executor_id:str):
