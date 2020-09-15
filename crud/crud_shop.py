@@ -32,10 +32,11 @@ def get_all_shop_of_executor(db:Session,executor_id:str):
     all_shop_id=[]
     for id in crud_shop_executor.get_shop_id_of_executor(db=db,executor_id=executor_id):
         all_shop_id.append(id[0])
-
-    for shop in db.query(shop.Shop).filter(shop.Shop.id.in_(all_shop_id)).all():
-        shop.channel_name=crud_channel.get_channel(db=db,channel_id=shop.channel_id).name
-        shop.country_name=crud_country.get_country(db=db,country_id=shop.country_id).name
+    shops=db.query(shop.Shop).filter(shop.Shop.id.in_(all_shop_id)).all()
+    for s in shops:
+        s.channel_name=crud_channel.get_channel(db=db,channel_id=s.channel_id).name
+        s.country_name=crud_country.get_country(db=db,country_id=s.postal_code).name
+    return shops
 
 
 def get_all_not_shop_of_executor(db:Session,executor_id:str):
