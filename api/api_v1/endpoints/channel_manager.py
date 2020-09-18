@@ -10,4 +10,6 @@ from api import deps
 router = APIRouter()
 
 
-
+@router.post("/")
+def add(channel_id:str,manager_id:str,db:Session = Depends(deps.get_db)):
+    crud_channel_manager.create_channel_manager(db=db,manager_id=manager_id,channel_id=channel_id)

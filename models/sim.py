@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from urllib.parse import quote_plus
 from sqlalchemy.orm import sessionmaker
-from db.database import Base
+from db.base_class import Base
 
 class Sim(Base):
     __tablename__ = "sim"

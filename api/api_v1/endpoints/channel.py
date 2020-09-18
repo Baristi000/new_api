@@ -49,7 +49,7 @@ def all_channel(token:Optional[str] = Header(None),db: Session = Depends(deps.ge
     return crud_channel.get_all_channel_db(db=db)
 
 
-@router.get("/{channel_id}", response_model=channel_schema.Channel)
+@router.get("/{channel_id}")
 def channel_detail(channel_id:str,token:Optional[str] = Header(None), db: Session = Depends(deps.get_db)):
     try:
         check_sercurity_scopes(token=token,scopes=settings.VIEW_CHANNEL_DETAIL_SCOPE)
@@ -66,6 +66,25 @@ def channel_detail(channel_id:str,token:Optional[str] = Header(None), db: Sessio
             headers={"WWW-Authenticate": "Bearer"},
         )
     return crud_channel.get_channel(db=db,channel_id=channel_id)
+
+@router.get("/{channel_id}/shops")
+def channel_detail(channel_id:str,token:Optional[str] = Header(None), db: Session = Depends(deps.get_db)):
+    try:
+        check_sercurity_scopes(token=token,scopes=settings.VIEW_CHANNEL_DETAIL_SCOPE)
+    except (JWTError, ValidationError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Unauthorized ",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except (mysql.connector.Error):
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="My sql connection error ",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return crud_shop.get_all_shop_channel(db=db,channel_id=channel_id)
+
 
 @router.get("/{channel_id}/shop-count")
 def Count_shop_of_channel(channel_id:str,token:Optional[str] = Header(None), db: Session = Depends(deps.get_db)):

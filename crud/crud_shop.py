@@ -28,6 +28,10 @@ def create_shop(db: Session, created_shop: shop_schema.ShopCreate):
 def count_shop(db:Session,channel_id:str):
     return db.query(shop.Shop).filter(shop.Shop.channel_id == channel_id).count()
 
+def count_shop_country(db:Session,postal_code:str):
+    return db.query(shop.Shop).filter(shop.Shop.postal_code == postal_code).count()
+
+
 def get_all_shop_of_executor(db:Session,executor_id:str):
     all_shop_id=[]
     for id in crud_shop_executor.get_shop_id_of_executor(db=db,executor_id=executor_id):
@@ -60,4 +64,11 @@ def check_shop_manager(db:Session,shop_id:str,manager_id:str):
     return False
 
 def get_all_shop_channel(db:Session,channel_id:str):
-    return db.query(shop.Shop).filter(shop.Shop.channel_id==channel_id).all()
+    shops= db.query(shop.Shop).filter(shop.Shop.channel_id==channel_id).all()
+    for s in shops:
+        s.channel_name=crud_channel.get_channel(db=db,channel_id=s.channel_id).name
+        s.country_name=crud_country.get_country(db=db,country_id=s.postal_code).name
+    return shops
+
+def get_all_shop_country(db:Session,postal_code:str):
+    return db.query(shop.Shop).filter(shop.Shop.postal_code==postal_code).all()
