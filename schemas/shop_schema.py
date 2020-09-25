@@ -18,7 +18,6 @@ class Shop(ShopBase):
     postal_code: Optional[str] = None
     channel_id:Optional[str] = None
     correspond_apicall:Optional[str] = None
-    sim_number :Optional[str] = None
 
 
     class Config:

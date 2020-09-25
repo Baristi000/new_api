@@ -1,6 +1,11 @@
 from typing import Any, List
 from models import token,user
-from fastapi import APIRouter, Depends, HTTPException,status
+from fastapi import APIRouter, Depends, HTTPException,status,Security
+from fastapi.security import (
+    OAuth2PasswordBearer,
+    OAuth2PasswordRequestForm,
+    SecurityScopes,
+)
 from sqlalchemy.orm import Session
 from core.config import settings
 from fastapi.responses import JSONResponse
@@ -16,40 +21,13 @@ import json
 import requests as Request
 router = APIRouter()
 
-
-
-
-def check_sercurity_scopes(role,scopes):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials"
-    )
-    if role=="executor":
-        if not (scopes in settings.EXECUTOR_SCOPES):
-            raise  credentials_exception
-    elif role=="manager":
-        if not (scopes in settings.MANAGER_SCOPES):
-            raise  credentials_exception
-    elif role=="newuser":
-        if not (scopes in settings.NEWUSER_SCOPES):
-            raise  credentials_exception
-
-def get_scopes(role):
-    if role=="executor":
-        return settings.EXECUTOR_SCOPES
-    elif role=="manager":
-        return settings.MANAGER_SCOPES
-    elif role=="admin":
-        return settings.ADMIN_SCOPES
-    return settings.NEWUSER_SCOPES
-
-@router.post("/login/token", response_model= token.Token,tags=["login"])
-async def login_for_access_token(User_Account :  user.User_Account,db: Session = Depends(deps.get_db)):
+@router.post("/token", response_model= token.Token)
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),db: Session = Depends(deps.get_db)):
     '''
     Login with web base account
     '''
     try:
-        curent_user=crud.crud_user.get_user_by_username(db,User_Account.username)
+        curent_user=crud.crud_user.get_user_by_username(db,form_data.username)
         if curent_user is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -61,7 +39,7 @@ async def login_for_access_token(User_Account :  user.User_Account,db: Session =
             data={"sub": curent_user.user_name,
             "role":curent_user.role,
             "id":curent_user.id,
-            "scopes":get_scopes(curent_user.role)
+            "scopes":deps.get_scopess(curent_user.role)
             
             }, expires_delta=access_token_expires
         )
@@ -71,9 +49,7 @@ async def login_for_access_token(User_Account :  user.User_Account,db: Session =
             detail="My sql connection error ",
             headers={"WWW-Authenticate": "Bearer"},
         ) 
-    return JSONResponse({"access_token": access_token, "token_type": "bearer"})
-
-
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/gmail/access-token")
 async def login_with_google(google_token_id:str,db: Session = Depends(deps.get_db) ):
@@ -98,7 +74,7 @@ async def login_with_google(google_token_id:str,db: Session = Depends(deps.get_d
             data={"sub": curent_user.user_name,
             "role":curent_user.role,
             "id":curent_user.id,
-            "scopes":get_scopes(curent_user.role)
+            "scopes":deps.get_scopess(curent_user.role)
             }, expires_delta=access_token_expires
         )
     except ValueError:
@@ -109,3 +85,5 @@ async def login_with_google(google_token_id:str,db: Session = Depends(deps.get_d
             ) 
     pass
     return {"access_token": access_token,"token_type": "bearer"}
+
+

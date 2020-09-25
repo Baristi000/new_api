@@ -18,7 +18,7 @@ class User(Base):
     hashed_password = Column(String(200))  
     role = Column(String(45)) 
     last_login = Column(String(45))  
-    activate = Column(String(45))  
+    activate = Column(String(45))
 
 class User_Account(BaseModel):
     username: str

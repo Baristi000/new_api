@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 from db.base_class import Base
 
 class Country(Base):
-    __tablename__ = "Country"
+    __tablename__ = "country"
     postl_code = Column(String(45), primary_key=True)
     name  = Column(String(45))  
 

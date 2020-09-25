@@ -12,4 +12,3 @@ class Channel_Manager(Base):
     __tablename__ = "channel_manager"
     channel_id = Column(String(45), primary_key=True)
     manager_id  = Column(String(45), primary_key=True)
-    manager_idasdasdasd  = Column(String(45))
