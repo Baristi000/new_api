@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from crud import crud_channel_manager
+from crud import crud_channel_manager,crud_shop
 from models import channel
 from schemas import channel_schema
 
@@ -10,11 +10,13 @@ def get_all_channel(db: Session, skip: int = 0, limit: int = 100):
     channels= db.query(channel.Channel).offset(skip).limit(limit).all()
     for c in channels:
         c.number_of_manager=crud_channel_manager.count_manager_of_channel(db=db,channel_id=c.id)
+        c.number_of_shop=crud_shop.count_shop(db=db,channel_id=c.id)
     return channels
 def get_all_channel_db(db: Session):
     channels=db.query(channel.Channel).all()
     for c in channels:
         c.number_of_manager=crud_channel_manager.count_manager_of_channel(db=db,channel_id=c.id)
+        c.number_of_shop=crud_shop.count_shop(db=db,channel_id=c.id)
     return channels
 
 def create_channel(db: Session, created_channel: channel_schema.ChannelCreate):

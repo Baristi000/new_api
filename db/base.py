@@ -9,3 +9,5 @@ from models.sim import Sim
 from models.user import User
 from models.shop_sim import Shop_sim
 from models.sim_info import Sim_info
+from models.sim_url import Sim_Url
+from models.url import Url

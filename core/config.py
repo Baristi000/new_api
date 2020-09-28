@@ -65,7 +65,8 @@ class Settings(BaseSettings):
         "channel_manager",
         "shop_executor",
         "shop_sim",
-        "inactivate_user"
+        "inactivate_user",
+        "url"
     ]
     class Config:
         case_sensitive = True

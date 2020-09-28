@@ -1,10 +1,13 @@
 from sqlalchemy.orm import Session
-
+from crud import crud_shop_sim
 from models import sim,message
 from schemas import sim_schema
 
 def get_all_sim(db: Session):
-    return db.query(sim.Sim).all()
+    sims= db.query(sim.Sim).all()
+    for s in sims:
+        s.number_of_shop=crud_shop_sim.count_shop_sim(db=db,sim_number=s.sim_number)
+    return sims
 
 
 def get_sim(db: Session,tty_gateway:str):
