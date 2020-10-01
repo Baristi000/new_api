@@ -1,4 +1,4 @@
-#!"c:\users\17521\onedrive\máy tính\new folder (2)\env\scripts\python.exe"
+#!"c:\users\17521\onedrive\máy tính\epsilo\back-end\env\scripts\python.exe"
 # EASY-INSTALL-ENTRY-SCRIPT: 'jose==1.0.0','console_scripts','jose'
 __requires__ = 'jose==1.0.0'
 import re

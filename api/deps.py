@@ -77,3 +77,4 @@ def get_scopess(role):
         return settings.ADMIN_SCOPESS
     return settings.NEWUSER_SCOPESS
 
+
