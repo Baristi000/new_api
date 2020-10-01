@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from api.api_v1.endpoints import user,country,channel,shop,shop_executor,channel_manager,sim,login,shop_sim
+from api.api_v1.endpoints import user,country,channel,shop,shop_executor,channel_manager,sim,login,shop_sim,url
 
 api_router = APIRouter()
 api_router.include_router(login.router, prefix="/login", tags=["login"])
@@ -12,3 +12,4 @@ api_router.include_router(shop_executor.router, prefix="/shop-executor", tags=["
 api_router.include_router(shop_sim.router, prefix="/shop-sim", tags=["shop-sim"])
 api_router.include_router(channel_manager.router, prefix="/channel_manager", tags=["channel-manager"])
 api_router.include_router(sim.router, prefix="/sim", tags=["sim"])
+api_router.include_router(url.router, prefix="/url", tags=["url"])

@@ -2,7 +2,6 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-
 class ShopBase(BaseModel):
     name: str
 
@@ -18,6 +17,8 @@ class Shop(ShopBase):
     postal_code: Optional[str] = None
     channel_id:Optional[str] = None
     correspond_apicall:Optional[str] = None
+    channel_name:Optional[str] = None
+    country_name:Optional[str] = None
 
 
     class Config:

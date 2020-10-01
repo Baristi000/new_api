@@ -13,3 +13,7 @@ def get_sim_url(db:Session,sim_number:str,url_id:str):
     return db.query(sim_url.Sim_Url).filter(sim_url.Sim_Url.sim_number==sim_number,sim_url.Sim_Url.url==url_id).all()
     
 
+def count_sim_of_url(db:Session,url_id:str):
+    return db.query(sim_url.Sim_Url).filter(sim_url.Sim_Url.url==url_id).count()
+    
+

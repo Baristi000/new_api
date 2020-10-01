@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from datetime import datetime
 from sqlalchemy import and_
 from api import deps
 from models import user
@@ -83,3 +84,7 @@ def create_new_user(db:Session,user_name:str,role:str):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+def update_last_login(db:Session,user_id:str):
+    db.query(user.User).filter(user.User.id == user_id).update({user.User.last_login:datetime.now()})
+    db.commit()

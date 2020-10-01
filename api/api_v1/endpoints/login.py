@@ -67,8 +67,8 @@ async def login_with_google(google_token_id:str,db: Session = Depends(deps.get_d
                 detail="Invalid email"
             ) 
         if curent_user is None :
-            crud_user.create_new_user(db=db,user_name=idinfo["email"],role="executor")
-
+            curent_user=crud_user.create_new_user(db=db,user_name=idinfo["email"],role="executor")
+        crud_user.update_last_login(db=db,user_id=curent_user.id)
         access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token =sercurity.create_access_token(
             data={"sub": curent_user.user_name,
@@ -77,6 +77,7 @@ async def login_with_google(google_token_id:str,db: Session = Depends(deps.get_d
             "scopes":deps.get_scopess(curent_user.role)
             }, expires_delta=access_token_expires
         )
+        
     except ValueError:
         raise HTTPException(
                 status_code=status.HTTP_502_BAD_GATEWAY,

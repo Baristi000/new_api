@@ -14,9 +14,8 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: str
-    role: str
-    activate:str
-    hashed_password:Optional[str] = None
+    role:Optional[str] = None
+    activate:Optional[str] = None
     first_name:Optional[str] = None
     last_name:Optional[str] = None
     last_login:Optional[str] = None

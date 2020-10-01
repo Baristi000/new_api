@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class SimBase(BaseModel):
-    sim_number:str
+    sim_number:Optional[str] = None
 
 
 class SimCreate(SimBase):
@@ -12,10 +12,10 @@ class SimCreate(SimBase):
     tty_gateway: str
     status:str
 
+
 class Sim(SimBase):
-    port_number: str
-    tty_gateway: str
-    status:str
+    tty_gateway:Optional[str] = None
+    status:Optional[str] = None
 
     class Config:
         orm_mode = True
