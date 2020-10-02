@@ -33,6 +33,11 @@ def add_new_url(
     '''
     Create new URL
     '''
+    if sercurity.check_url(URL=new_url.url) is False:
+        raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail="Wrong URL "
+            )
     return crud_url.create_new_url(db=db,new_url=new_url.url)
 
 @router.post("/update-url",tags=["url"])

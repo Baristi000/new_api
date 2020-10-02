@@ -11,7 +11,9 @@ class Settings(BaseSettings):
     MYSQL_DB:str ="dai"
     SQLACHEMY_CONNECTION_STRING = 'mysql+pymysql://{}:{}@{}/{}'.format(MYSQL_USER,quote_plus(MYSQL_PASSWORD), MYSQL_SERVER, MYSQL_DB)
     
-    REGEX = '^[a-z]{1,6}_?[0-9]{0,4}@epsilo\.io$'
+
+    URL_REGEX='^[a-z0-9]+[.]\w[a-z0-9]{0,20}$'
+    REGEX = '^[a-z0-9]+[\._]?[a-z0-9]+@epsilo\.io$'
             
 
     SECRET_KEY:str = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
