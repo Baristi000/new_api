@@ -35,8 +35,9 @@ def get_all_user(db: Session):
 def get_user_by_username(db: Session, user_name: str):
     user_db=db.query(user.User).filter(user.User.user_name == user_name).first()
     return user_db
+
 def create_user(db: Session, users: user_schema.UserCreate):
-    db_user = user.User(id=users.id,user_name=users.user_name, role=users.role,activate="1")
+    db_user = user.User(id=get_random_string(8),user_name=users.user_name, role=users.role,activate="1")
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

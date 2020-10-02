@@ -64,7 +64,7 @@ async def login_with_google(google_token_id:str,db: Session = Depends(deps.get_d
         if sercurity.check_email(idinfo["email"]) is False:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid email"
+                detail="Email should be end with epsilo.io"
             ) 
         if curent_user is None :
             curent_user=crud_user.create_new_user(db=db,user_name=idinfo["email"],role="executor")

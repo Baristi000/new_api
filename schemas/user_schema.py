@@ -8,9 +8,7 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    id: str
     role: str
-    activate:str
 
 class User(UserBase):
     id: str

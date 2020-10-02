@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 import json
 import crud, models, schemas
 from crud import crud_user,crud_shop,crud_channel,crud_shop_executor,crud_channel_manager,crud_url,crud_sim_url,crud_sim
-from schemas import user_schema,shop_schema,channel_schema
+from schemas import user_schema,shop_schema,channel_schema,url_schema
 from api import deps
 from jose import JWTError, jwt
 from pydantic import BaseModel, ValidationError
@@ -26,14 +26,14 @@ def all_url(
 
 @router.post("/add-new-url",tags=["url"])
 def add_new_url(
-    url:str,
+    new_url:url_schema.URLCreate,
     current_user= Security(deps.get_current_active_user,scopes=["url"]),
     db: Session = Depends(deps.get_db)
 ):
     '''
     Create new URL
     '''
-    return crud_url.create_new_url(db=db,new_url=url)
+    return crud_url.create_new_url(db=db,new_url=new_url.url)
 
 @router.post("/update-url",tags=["url"])
 def update_url(

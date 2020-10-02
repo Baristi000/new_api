@@ -5,6 +5,7 @@ import crud, models, schemas
 from crud import crud_user,crud_shop,crud_channel,crud_shop_executor,crud_channel_manager,crud_url,crud_sim_url,crud_sim
 from schemas import user_schema,shop_schema,channel_schema
 from api import deps
+from core import sercurity
 router = APIRouter()
 
 @router.get("/", response_model=List[user_schema.User])
@@ -37,6 +38,47 @@ def All_managers(
     View All manager User
     '''
     return crud_user.get_all_manager(db=db)
+@router.post("/create_new_user", response_model=user_schema.User)
+def Create_new_user(
+    new_user:user_schema.UserCreate,
+    current_user= Security(deps.get_current_active_user,scopes=["read_user"]),
+    db: Session = Depends(deps.get_db)
+):
+    '''
+    Create_new_user
+    '''
+    if sercurity.check_email(new_user.user_name) is False:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Invalid Email"
+        )
+    if not crud_user.get_user_by_username(db=db,user_name=new_user.user_name) is None:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Email already exist"
+        )
+    if new_user.user_name.role not in['executor','admin','manager']:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Invalid Role"
+        )
+    return crud_user.create_user(db=db,users=new_user)
+@router.post("/checkemaiol")
+def Create_new_user(
+    email:str,
+    current_user= Security(deps.get_current_active_user,scopes=["read_user"]),
+    db: Session = Depends(deps.get_db)
+):
+    '''
+    Create_new_user
+    '''
+    if sercurity.check_email(email) is False:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Invalid Email"
+        )
+   
+    return "ss"
 
 @router.get("/{id}", response_model=user_schema.User)
 def user_detail(
