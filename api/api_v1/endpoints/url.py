@@ -13,7 +13,7 @@ from core import sercurity
 import mysql.connector
 router = APIRouter()
 
-@router.get("/",tags=["url"])
+@router.get("/")
 def all_url(
     current_user= Security(deps.get_current_active_user,scopes=["url"]),
     db: Session = Depends(deps.get_db)
@@ -24,23 +24,26 @@ def all_url(
     return crud_url.get_all_url(db=db)
 
 
-@router.post("/add-new-url",tags=["url"])
+@router.post("/add-new-url")
 def add_new_url(
-    new_url:url_schema.URLCreate,
+    url_list:List[str],
     current_user= Security(deps.get_current_active_user,scopes=["url"]),
     db: Session = Depends(deps.get_db)
 ):
     '''
     Create new URL
     '''
-    if sercurity.check_url(URL=new_url.url) is False:
-        raise HTTPException(
-                status_code=status.HTTP_502_BAD_GATEWAY,
-                detail="Wrong URL "
-            )
-    return crud_url.create_new_url(db=db,new_url=new_url.url)
+    for url in url_list:
+        if sercurity.check_url(URL=url) is False:
+            raise HTTPException(
+                    status_code=status.HTTP_502_BAD_GATEWAY,
+                    detail="Invalid:"+url
+                )
+    for url in url_list:
+        crud_url.create_new_url(db=db,new_url=url)
+    return url_list
 
-@router.post("/update-url",tags=["url"])
+@router.post("/update-url")
 def update_url(
     url_id:str,
     new_url:str,
@@ -59,7 +62,7 @@ def update_url(
     return {"message":" success"}
 
 
-@router.post("/asign-url-to-sim",tags=["url"])
+@router.post("/asign-url-to-sim")
 def asign_url_to_sim(
     sim:List[str],
     url:List[str],

@@ -31,14 +31,6 @@ class Settings(BaseSettings):
         "inactivate_user":"in activate user"
     }
     #test
-    NEWUSER_SCOPESS=[
-        "me",
-        "read_user",
-        "read_shop",
-        "read_channel",
-        "read_country",
-        "read_sim"
-        ]
     EXECUTOR_SCOPESS=[
         "me",
         "read_user",

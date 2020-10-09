@@ -73,8 +73,6 @@ def get_scopess(role):
         return settings.EXECUTOR_SCOPESS
     elif role=="manager":
         return settings.MANAGER_SCOPESS
-    elif role=="admin":
-        return settings.ADMIN_SCOPESS
-    return settings.NEWUSER_SCOPESS
+    return settings.ADMIN_SCOPESS
 
 
