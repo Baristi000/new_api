@@ -10,4 +10,4 @@ from db.base_class import Base
 class Url(Base):
     __tablename__ = "url" 
     id = Column(Integer,primary_key=True, autoincrement=True)  
-    url = Column(String(45)) 
+    url = Column(String(200)) 
