@@ -9,10 +9,6 @@ import random
 from fastapi import APIRouter, Depends, HTTPException
 import string
 
-def get_random_string(length):
-    letters = string.ascii_lowercase
-    result_str = ''.join(random.choice(letters) for i in range(length))
-    return result_str
 
 def get_user(db: Session, user_id: str):
     return db.query(user.User).filter(user.User.id == user_id).first()
@@ -37,7 +33,7 @@ def get_user_by_username(db: Session, user_name: str):
     return user_db
 
 def create_user(db: Session, users: user_schema.UserCreate):
-    db_user = user.User(id=get_random_string(8),user_name=users.user_name, role=users.role,activate="1")
+    db_user = user.User(user_name=users.user_name, role=users.role,activate="1")
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -80,7 +76,7 @@ def inactivate_user(db:Session,user_id:str,activate:str):
     db.commit()
 
 def create_new_user(db:Session,user_name:str,role:str):
-    db_user = user.User(id=get_random_string(8),user_name=user_name, role=role,activate="1")
+    db_user = user.User(user_name=user_name, role=role,activate="1")
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

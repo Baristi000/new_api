@@ -57,7 +57,7 @@ def Create_new_user(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Email already exist"
         )
-    if new_user.user_name.role not in['executor','admin','manager']:
+    if new_user.role not in['executor','admin','manager']:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Invalid Role"

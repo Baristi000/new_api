@@ -11,11 +11,10 @@ from pydantic import BaseModel
 
 class User(Base):
     __tablename__ = "user"
-    id = Column(String(45), primary_key=True)
+    id = Column(Integer,primary_key=True, autoincrement=True)  
     user_name  = Column(String(45))  
     first_name = Column(String(45))  
     last_name = Column(String(45))    
-    hashed_password = Column(String(200))  
     role = Column(String(45)) 
     last_login = Column(String(45))  
     activate = Column(String(45))
