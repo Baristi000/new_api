@@ -6,7 +6,7 @@ from models import user,token
 from db.database import SessionLocal, engine
 from api.api_v1.api import api_router
 from api import deps
-rom fastapi.encoders import jsonable_encoder
+from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from core.config import settings
 import crud
