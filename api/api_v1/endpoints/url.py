@@ -34,12 +34,6 @@ def add_new_url(
     Create new URL
     '''
     for url in url_list:
-        if sercurity.check_url(URL=url) is False:
-            raise HTTPException(
-                    status_code=status.HTTP_502_BAD_GATEWAY,
-                    detail="Invalid:"+url
-                )
-    for url in url_list:
         crud_url.create_new_url(db=db,new_url=url)
     return url_list
 

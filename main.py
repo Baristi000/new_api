@@ -6,6 +6,8 @@ from models import user,token
 from db.database import SessionLocal, engine
 from api.api_v1.api import api_router
 from api import deps
+rom fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from core.config import settings
 import crud
 from core import sercurity
@@ -35,5 +37,13 @@ async def db_session_middleware(request: Request, call_next):
     finally:
         request.state.db.close()
     return response
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content=jsonable_encoder({"detail": exc.errors(), "body": exc.body}),
+    )
+
 
 app.include_router(api_router)
