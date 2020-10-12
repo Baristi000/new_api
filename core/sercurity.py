@@ -27,9 +27,7 @@ def check_email(email):
     return False
 
 def check_url(URL):
-    if(re.search(settings.URL_REGEX,URL)):  
-        return True  
-    return False
+    return re.match(settings.URL_REGEX,URL) 
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)

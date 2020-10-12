@@ -46,6 +46,7 @@ async def get_current_user(
         if username is None:
             raise credentials_exception
         token_scopes = payload.get("scopes", [])
+        print(token_scopes)
         token_data = models.token.TokenData(scopes=token_scopes, username=username)
     except (JWTError, ValidationError):
         raise credentials_exception

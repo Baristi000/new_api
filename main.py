@@ -1,6 +1,6 @@
 from typing import List
 from datetime import datetime, timedelta
-from fastapi import Depends, FastAPI, HTTPException, Request, Response
+from fastapi import Depends, FastAPI, HTTPException, Request, Response,status
 from sqlalchemy.orm import Session
 from models import user,token
 from db.database import SessionLocal, engine
@@ -16,6 +16,8 @@ from fastapi.security import (
     OAuth2PasswordRequestForm,
     SecurityScopes,
 )
+from schemas import exception
+from fastapi.responses import JSONResponse
 import mysql.connector
 user.Base.metadata.create_all(bind=engine)
 from fastapi.middleware.cors import CORSMiddleware
@@ -43,6 +45,12 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content=jsonable_encoder({"detail": exc.errors(), "body": exc.body}),
+    )
+@app.exception_handler(exception.UnicornException)
+async def unicorn_exception_handler(request: Request, exc: exception.UnicornException):
+    return JSONResponse(
+        status_code=502,
+        content={"message": f"{exc.messages}: {exc.name}"}
     )
 
 

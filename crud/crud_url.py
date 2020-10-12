@@ -19,7 +19,9 @@ def get_all_url(db:Session):
         u.number_of_sim=crud_sim_url.count_sim_of_url(db=db,url_id=u.id)
     return urls
 
-
+def delete_url(db:Session,id:str):
+    db.query(url.Url).filter(url.Url.id==id).delete()
+    db.commit()
 def update_url(db:Session,id:str,new_url:str):
     db.query(url.Url).filter(url.Url.id==id).update({url.Url.url: new_url})
     db.commit()

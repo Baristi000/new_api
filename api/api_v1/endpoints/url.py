@@ -11,6 +11,7 @@ from jose import JWTError, jwt
 from pydantic import BaseModel, ValidationError
 from core import sercurity
 import mysql.connector
+from schemas.exception import UnicornException
 router = APIRouter()
 
 @router.get("/")
@@ -33,9 +34,34 @@ def add_new_url(
     '''
     Create new URL
     '''
+    url_fail_list=[]
+
+    for url in url_list:
+        if sercurity.check_url(url) is None:
+            url_fail_list.append(url)
+
+    if len(url_fail_list) !=0:
+        raise UnicornException(
+            messages="Wrong URL format",
+            name=url_fail_list
+            )
+
     for url in url_list:
         crud_url.create_new_url(db=db,new_url=url)
     return url_list
+
+@router.post("/delete-url")
+def Delete_url_list(
+    id_list:List[str],
+    current_user= Security(deps.get_current_active_user,scopes=["url"]),
+    db: Session = Depends(deps.get_db)
+):
+    '''
+    Create new URL
+    '''
+    for url in id_list:
+        crud_url.delete_url(db=db,id=url)
+    return id_list
 
 @router.post("/update-url")
 def update_url(
@@ -48,9 +74,9 @@ def update_url(
     Update URL
     '''
     if crud_url.get_url(db=db,id=url_id) is None:
-        raise HTTPException(
-                status_code=status.HTTP_502_BAD_GATEWAY,
-                detail="Url not found"
+        raise UnicornException(
+                messages="URL Not Found",
+                name=url_id
             )
     crud_url.update_url(db=db,id=url_id,new_url=new_url)
     return {"message":" success"}
