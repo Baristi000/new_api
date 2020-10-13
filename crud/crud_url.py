@@ -10,7 +10,7 @@ def create_new_url(db: Session, new_url:str):
     return db_url
 
 def get_url(db:Session,id:str):
-    return db.query(url.Url).filter(url.Url.id==id).all()
+    return db.query(url.Url).filter(url.Url.id==id).first()
 
 
 def get_all_url(db:Session):
