@@ -11,6 +11,7 @@ from api import deps
 from jose import JWTError, jwt
 from pydantic import BaseModel, ValidationError
 import mysql.connector
+from schemas.exception import UnicornException
 router = APIRouter()
 
 
@@ -22,21 +23,30 @@ def View_all_Countries(
 ):
     return crud_country.get_all_country(db=db)
 
-@router.get("/{country_id}", response_model=country_schema.Country)
+@router.get("/{postal_code}", response_model=country_schema.Country)
 def View_country_detail(
     postal_code:str,
     current_user= Security(deps.get_current_active_user,scopes=["read_country"]),
     db: Session = Depends(deps.get_db)
 ):
+    if crud_country.get_country(db=db,country_id=postal_code) is None:
+        raise UnicornException(
+            messages="COUNTRY ID NOT FOUND",
+            name=postal_code
+            )
     return crud_country.get_country(db=db,country_id=postal_code)
 
-@router.get("/{country_id}/all_shop")
+@router.get("/{postal_code}/all_shop")
 def View_country_detail(
     postal_code:str,
     current_user= Security(deps.get_current_active_user,scopes=["read_country"]),
     db: Session = Depends(deps.get_db)
 ):
-
+    if crud_country.get_country(db=db,country_id=postal_code) is None:
+        raise UnicornException(
+            messages="COUNTRY ID NOT FOUND",
+            name=postal_code
+            )
     return crud_shop.get_all_shop_country(db=db,postal_code=postal_code)
 
     

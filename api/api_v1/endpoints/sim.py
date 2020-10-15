@@ -6,6 +6,7 @@ import crud, models, schemas
 from crud import crud_sim,crud_message,crud_shop_sim,crud_shop
 from schemas import sim_schema,message_schema
 from api import deps
+from schemas.exception import UnicornException
 router = APIRouter()
 
 
@@ -23,6 +24,11 @@ def sim_details(
     current_user= Security(deps.get_current_active_user,scopes=["read_sim"]),
     db: Session = Depends(deps.get_db)
 ):
+    if crud_sim.get_sim_by_number(db=db,sim_number=sim_number) is None:
+        raise UnicornException(
+            messages="SIM NOT FOUND",
+            name=sim_number
+        )
     return crud_sim.get_sim_by_number(db=db,sim_number=sim_number)
 
 @router.get("/{sim_number}/shops")
@@ -31,6 +37,11 @@ def sim_details(
     current_user= Security(deps.get_current_active_user,scopes=["read_sim"]),
     db: Session = Depends(deps.get_db)
 ):
+    if crud_sim.get_sim_by_number(db=db,sim_number=sim_number) is None:
+        raise UnicornException(
+            messages="SIM NOT FOUND",
+            name=sim_number
+        )
     return crud_shop.get_all_shop_of_sim(db=db,sim_number=sim_number)
 
 @router.get("/{sim_number}/all-messages")
@@ -39,6 +50,11 @@ def all_sim_message(
     current_user= Security(deps.get_current_active_user,scopes=["read_sim"]),
     db: Session = Depends(deps.get_db)
 ):
+    if crud_sim.get_sim_by_number(db=db,sim_number=sim_number) is None:
+        raise UnicornException(
+            messages="SIM NOT FOUND",
+            name=sim_number
+        )
     return crud_sim.get_message(db=db,sim_number=sim_number)
 
 @router.get("/{sim_number}/shop-count")
@@ -47,6 +63,11 @@ def get_sim_db(
     current_user= Security(deps.get_current_active_user,scopes=["read_sim"]),
     db: Session = Depends(deps.get_db)
 ):
+    if crud_sim.get_sim_by_number(db=db,sim_number=sim_number) is None:
+        raise UnicornException(
+            messages="SIM NOT FOUND",
+            name=sim_number
+        )
     return crud_sim.count_shop(db=db,sim_number=sim_number)
 
 

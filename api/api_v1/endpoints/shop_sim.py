@@ -7,6 +7,7 @@ import crud, models, schemas
 from crud import crud_shop_sim
 from schemas import shop_executor_schema
 from api import deps
+from schemas.exception import UnicornException
 router = APIRouter()
 
 
@@ -19,4 +20,9 @@ def All_shop_executors(
     '''
     View All shop executors
     '''
+    if crud_shop_sim.get_all_shop_sim(db=db,shop_id=shop_id) is None:
+        raise UnicornException(
+            messages="SHOP ID NOT FOUND",
+            name=shop_id
+            )
     return crud_shop_sim.get_all_shop_sim(db=db,shop_id=shop_id)

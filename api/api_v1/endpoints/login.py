@@ -43,6 +43,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
             
             }, expires_delta=access_token_expires
         )
+        crud_user.update_last_login(db=db,user_id=curent_user.id)
     except (mysql.connector.Error):
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
